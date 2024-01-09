@@ -1,0 +1,3 @@
+/home/mobin/Desktop/ha/tanin/right/build/CMakeFiles/right.dir
+/home/mobin/Desktop/ha/tanin/right/build/CMakeFiles/edit_cache.dir
+/home/mobin/Desktop/ha/tanin/right/build/CMakeFiles/rebuild_cache.dir

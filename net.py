@@ -26,10 +26,15 @@ class HostInTheMiddleTopo(Topo):
         left_host = self.addHost(LEFT_HOST_NAME)
         middle_host = self.addHost(MIDDLE_HOST_NAME)
         right_host = self.addHost(RIGHT_HOST_NAME)
+        s1 = self.addSwitch("s1")
+        s2 = self.addSwitch("s2")
 
-        self.addLink(left_host, middle_host)
-        self.addLink(middle_host, right_host)
-
+        self.addLink(left_host, s1)
+        self.addLink(middle_host, s1)
+        self.addLink(middle_host, s2)
+        self.addLink(right_host, s2)
+        #self.addLink(left_host, middle_host)
+        #self.addLink(middle_host, right_host)
 
 def get_interface(host: str, index: int):
     return f"{host}-eth{index}"
@@ -62,12 +67,23 @@ def run():
     right_host = net[RIGHT_HOST_NAME]
     disable_offload(right_host, 'rx', 0)
     disable_offload(right_host, 'tx', 0)
+    
+    right_host.cmd(
+        f"tcpdump -i rgt_h-eth0 -w outlft.pcap &")
+    left_host.cmd(
+        f"tcpdump -i lft_h-eth0 -w outrgt.pcap &")
+    middle_host.cmd(
+        f"tcpdump -i mid_h-eth0 -w outmid0.pcap &")
+    middle_host.cmd(
+        f"tcpdump -i mid_h-eth1 -w outmid1.pcap &")
 
     middle_host.cmd(
-        f"target/release/tanin {get_interface(MIDDLE_HOST_NAME, 0)} {get_interface(MIDDLE_HOST_NAME, 1)} &")
-
+        f"rust/target/release/target {get_interface(MIDDLE_HOST_NAME, 0)} {get_interface(MIDDLE_HOST_NAME, 1)} &")
+   
+    net.start()
     CLI(net)
-
+    net.stop()
+    
 
 if __name__ == "__main__":
     run()

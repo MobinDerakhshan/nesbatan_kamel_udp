@@ -10,8 +10,8 @@
 std::string encryption(int key, std::string message);
 std::string decryption(int key, std::string message);
 
-
 int main() {
+  std::cout<<"salam"<<std::endl;
   int socketNumber;
   struct sockaddr_in cliaddr, serveraddr;
 
@@ -27,29 +27,30 @@ int main() {
   serveraddr.sin_family = AF_INET;
   serveraddr.sin_port = htons(PORT);
   serveraddr.sin_addr.s_addr = inet_addr(SERVER_IP);
+  unsigned int serveraddrLen = sizeof(serveraddr);
 
   if (bind(socketNumber, (const struct sockaddr *)&serveraddr,
            sizeof(serveraddr)) < 0) {
-    perror("bind failed");
+    std::cout << "-bind-" << std::endl;
     exit(EXIT_FAILURE);
   }
 
   // DF
-  std::map<in_addr_t, int> key;
-  int p = 888883, n = 777;
-  int a = 666;
+  std::map<in_addr_t, long int> key;
+  int p = 1008001, n = 71;
+  int a = 67;
 
   std::string message;
   char recmessage[1024] = {};
-  int temp;
-
+  long int temp;
   while (true) {
-
+      std::cout<<"          1"<<std::endl;
     int recvmessagesize = recvfrom(socketNumber, recmessage, 1024, MSG_WAITALL,
                                    (struct sockaddr *)&cliaddr, &cliaddrLen);
-    recmessage[recvmessagesize] = '\0';
-    message = recmessage;
-
+        std::cout<<"            2"<<std::endl;
+      recmessage[recvmessagesize] = '\0';
+      message = recmessage;
+      std::cout << message << std::endl;
     if (message == "give me p") {
       message = std::to_string(p);
       sendto(socketNumber, message.c_str(), message.size(), MSG_CONFIRM,
@@ -59,22 +60,20 @@ int main() {
       sendto(socketNumber, message.c_str(), message.size(), MSG_CONFIRM,
              (const struct sockaddr *)&cliaddr, cliaddrLen);
     } else if (message.substr(0, 9) == "my key is") {
-
-      temp = (int)pow(n, a) % p;
+      // if (key[cliaddr.sin_addr.s_addr] < 0) {
+      message = message.substr(12);
+      temp = (long int)pow(std::stoi(message), a) % p;
+      key[cliaddr.sin_addr.s_addr] = abs(temp);
+      //}
+      temp = (long int)pow(n, a) % p;
       message = std::to_string(temp);
-
+        std::cout<<"uuuuuuuuuuuuuuu"<<std::endl;
       sendto(socketNumber, message.c_str(), message.size(), MSG_CONFIRM,
              (const struct sockaddr *)&cliaddr, cliaddrLen);
-
-      if (key[cliaddr.sin_addr.s_addr] < 0) {
-        message = recmessage;
-        temp = (int)pow(std::stoi(message.substr(8)), 666) % p;
-        key[cliaddr.sin_addr.s_addr] = abs(temp);
-      }
     } else {
-      message = recmessage;
-      message = decryption(key[cliaddr.sin_addr.s_addr],message);
-
+      std::cout << "recvmessage: "<<message << std::endl;
+      message = decryption(key[cliaddr.sin_addr.s_addr], message);
+      std::cout << "e: "<<message << std::endl;
       message = encryption(key[cliaddr.sin_addr.s_addr], "ke chi?");
       sendto(socketNumber, message.c_str(), message.size(), MSG_CONFIRM,
              (const struct sockaddr *)&cliaddr, cliaddrLen);
@@ -83,35 +82,33 @@ int main() {
 }
 
 std::string encryption(int key, std::string message) {
-    int temp = key;
+  int temp = key;
 
-    int key_size = 0;
-    while (temp > 0) {
-        temp /= 10;
-        key_size++;
-    }
+  int key_size = 0;
+  while (temp > 0) {
+    temp /= 10;
+    key_size++;
+  }
 
-    for (int i = 0; i < message.size(); i++) {
-        int j = i % key_size;
-        message[i] += (key / pow(10, j)) * 10 - key / pow(10, j - 1);
-    }
+  for (int i = 0; i < message.size(); i++) {
+    int j = i % key_size;
+    message[i] += (int)(key / pow(10, j)) * 10 - (key / pow(10, j - 1));
+  }
 
-    return message;
+  return message;
 }
 
 std::string decryption(int key, std::string message) {
-    int temp = key;
+  int temp = key;
+  int key_size = 0;
+  while (temp > 0) {
+    temp /= 10;
+    key_size++;
+  }
+  for (int i = 0; i < message.size(); i++) {
+    int j = i % key_size;
+      message[i] -= (int)((key / pow(10, j))) * 10 - (key / pow(10, j - 1));
+  }
 
-    int key_size = 0;
-    while (temp > 0) {
-        temp /= 10;
-        key_size++;
-    }
-
-    for (int i = 0; i < message.size(); i++) {
-        int j = i % key_size;
-        message[i] -= (key / pow(10, j)) * 10 - key / pow(10, j - 1);
-    }
-
-    return message;
+  return message;
 }

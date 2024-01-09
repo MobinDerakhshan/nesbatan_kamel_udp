@@ -1,0 +1,3 @@
+/home/mobin/Desktop/ha/tanin/mid/build/CMakeFiles/limi2.dir
+/home/mobin/Desktop/ha/tanin/mid/build/CMakeFiles/edit_cache.dir
+/home/mobin/Desktop/ha/tanin/mid/build/CMakeFiles/rebuild_cache.dir

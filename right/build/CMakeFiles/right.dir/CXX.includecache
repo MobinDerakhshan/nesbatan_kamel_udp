@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/mobin/Desktop/ha/tanin/right/main.cpp
+arpa/inet.h
+-
+bits/stdc++.h
+-
+map
+-
+netinet/in.h
+-
+sys/socket.h
+-
+
